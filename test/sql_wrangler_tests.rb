@@ -27,12 +27,11 @@ class SqLiteConnectionTests < FasTest::TestClass
   def test__query__without_executing_it
     query = @conn.query("SELECT * FROM users")
     assert_equal("SELECT * FROM users", query.sql_string)
-    assert_true(query.db != nil)
   end
   
 end
 
-class SqLiteQueryTests < FasTest::TestClass
+class QueryTests < FasTest::TestClass
   
   def class_setup
     @conn = SqlWrangler::SqLiteConnection.new ":memory:"
@@ -59,15 +58,6 @@ class SqLiteQueryTests < FasTest::TestClass
   
   def class_teardown
     @conn.close
-  end
-  
-  def test__get_raw_result__returns_correct_result
-    result = @conn.query("SELECT username, password FROM users").get_raw_result
-    assert_equal(2, result.length)
-    assert_equal("username1", result[0][0])
-    assert_equal("password1", result[0][1])
-    assert_equal("username2", result[1][0])
-    assert_equal("password2", result[1][1])
   end
   
   def test__execute__has_correct_values_on_simple_query
