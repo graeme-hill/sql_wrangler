@@ -31,10 +31,12 @@ module SqlWrangler
     
     attr_reader :sql_string
     attr_reader :db
+    attr_reader :groupings
     
     def initialize(db, sql_string)
       @db = db
       @sql_string = sql_string
+      @groupings = []
     end
     
     def get_raw_result
@@ -42,22 +44,34 @@ module SqlWrangler
     end
     
     def execute
-      result = @db.execute2(@sql_string)
-      anon_guid_str = Guid.new.to_s.gsub("-", "")
-      anon_type = Object.const_set("Anon#{anon_guid_str}".to_sym, Class.new)
-      result[0].each do |column|
-        anon_type.class_eval do
-          attr_accessor column.to_sym
-        end
-      end
-      col_range = 0..(result[0].length-1)
-      result[1,result.length-1].each do |row|
-        instance = anon_type.new
+      raw_result = @db.execute2(@sql_string)
+      formatted_result = []
+      col_range = 0..(raw_result[0].length-1)
+      raw_result[1,raw_result.length-1].each do |raw_row|
+        formatted_row = {}
         for i in col_range do
-          column = result[0][i]
-          instance.send "#{column}=", row[i]
+          formatted_row[raw_result[0][i]] = raw_row[i]
         end
+        formatted_result << formatted_row
       end
+      return formatted_result
+    end
+    
+    def group(name, columns)
+      @groupings << QueryGrouping.new(name, columns)
+      return self
+    end
+    
+  end
+  
+  class QueryGrouping
+    
+    attr_reader :name
+    attr_reader :columns
+    
+    def initialize(name, columns)
+      @name = name
+      @columns = columns
     end
     
   end
