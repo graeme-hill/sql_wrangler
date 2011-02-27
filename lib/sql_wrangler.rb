@@ -1,10 +1,13 @@
-require 'rubygems'
-require 'guid'
 require 'sqlite3'
 
 module SqlWrangler
   
   class SqlConnection
+    
+    def query(sql_string)
+      Query.new self, sql_string
+    end
+    
   end
   
   class SqLiteConnection < SqlConnection
@@ -13,26 +16,12 @@ module SqlWrangler
       @db = SQLite3::Database.new db_path
     end
     
-    def execute_sql(sql_command)
-      @db.execute(sql_command)
-    end
-    
-    def execute_query(query)
-      raw_result = @db.execute2(query.sql_string)
-      formatted_result = []
-      col_range = 0..(raw_result[0].length-1)
-      raw_result[1,raw_result.length-1].each do |raw_row|
-        formatted_row = {}
-        for i in col_range do
-          formatted_row[raw_result[0][i]] = raw_row[i]
-        end
-        formatted_result << formatted_row
-      end
-      return formatted_result
+    def execute_sql(sql_string)
+      @db.execute2(sql_string)
     end
 
-    def query(sql_string)
-      Query.new self, sql_string
+    def command(sql_string)
+      @db.execute(sql_string)
     end
 
     def close
@@ -54,7 +43,21 @@ module SqlWrangler
     end
     
     def execute
-      @conn.execute_query(self)
+      raw_result = @conn.execute_sql(@query_string)
+      return format_query_result(raw_result)
+    end
+    
+    def format_query_result(raw_result)
+      formatted_result = []
+      col_range = 0..(raw_result[0].length-1)
+      raw_result[1,raw_result.length-1].each do |raw_row|
+        formatted_row = {}
+        for i in col_range do
+          formatted_row[raw_result[0][i]] = raw_row[i]
+        end
+        formatted_result << formatted_row
+      end
+      return formatted_result
     end
     
     def group(name, columns)
