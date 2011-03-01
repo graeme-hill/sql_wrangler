@@ -139,8 +139,9 @@ class QueryTests < FasTest::TestClass
       order by g.group_name, u.username, a.title, c.content") \
       .group("users", ["group_name"]) \
       .group("articles", ["username"]) \
-      .group("comments", ["comment_id"]) \
+      .group("comments", ["article_content", "title"]) \
       .execute
+      
     assert_equal(2, result.length)
     assert_equal("group one", result[0]["group_name"])
     assert_equal(2, result[0]["users"].length)
