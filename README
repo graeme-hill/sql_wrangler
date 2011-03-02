@@ -1,1 +1,2 @@
-Makes it easier to deal with SQL queries and handle their results.
+Makes it easier to deal with SQL queries and handle their results.  You can see
+how it works by looking at the unit tests.
