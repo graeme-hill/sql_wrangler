@@ -122,8 +122,8 @@ module SqlWrangler
       return nil
     end
     
-    def group(name, columns)
-      new_grouping = QueryGrouping.new(name, columns)
+    def group_by columns, options = {}
+      new_grouping = QueryGrouping.new(options[:into], columns)
       new_grouping.level = @groupings.length
       @groupings << new_grouping
       return self

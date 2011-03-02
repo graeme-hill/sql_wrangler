@@ -104,7 +104,7 @@ class QueryTests < FasTest::TestClass
       from groups g
       inner join users_groups ug on ug.group_name = g.group_name
       inner join users u on u.username = ug.username
-      order by u.username, g.group_name").group("users", ["group_name"]).execute
+      order by u.username, g.group_name").group_by(["group_name"], :into => "users").execute
     assert_equal(2, result.length)
     assert_equal("group one", result[0]["group_name"])
     assert_equal(2, result[0]["users"].length)
@@ -121,7 +121,7 @@ class QueryTests < FasTest::TestClass
       from groups g
       inner join users_groups ug on ug.group_name = g.group_name
       inner join users u on u.username = ug.username
-      order by u.username, g.group_name").group("users", ["group_name"])
+      order by u.username, g.group_name").group_by(["group_name"], :into => "users")
     assert_equal(1, query.groupings.count)
     assert_equal("users", query.groupings[0].name)
     assert_equal(1, query.groupings[0].columns.length)
@@ -137,9 +137,9 @@ class QueryTests < FasTest::TestClass
       left join articles a on a.author = u.username
       left join comments c on c.article_id = a.id
       order by g.group_name, u.username, a.title, c.content") \
-      .group("users", ["group_name"]) \
-      .group("articles", ["username"]) \
-      .group("comments", ["article_content", "title"]) \
+      .group_by(["group_name"], :into => "users") \
+      .group_by(["username"], :into => "articles") \
+      .group_by(["article_content", "title"], :into => "comments") \
       .execute
       
     assert_equal(2, result.length)

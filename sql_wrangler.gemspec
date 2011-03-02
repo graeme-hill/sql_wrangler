@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = "sql_wrangler"
-  s.version = "0.0.1"
+  s.version = "0.0.2"
   s.authors = ["Graeme Hill"]
   s.email = "graemekh@gmail.com"
   s.homepage = "https://github.com/graeme-hill/sql_wrangler"
