@@ -21,7 +21,7 @@ module SqlWrangler
     end
 
     def command(sql_string)
-      @db.execute(sql_string)
+      @db.execute_batch(sql_string)
     end
 
     def close
