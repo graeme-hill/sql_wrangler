@@ -4,8 +4,8 @@ module SqlWrangler
 
   class SqlConnection
 
-    def query(sql_string)
-      Query.new self, sql_string
+    def query(sql_string, params={})
+      Query.new(self, sql_string, params)
     end
 
   end
@@ -16,8 +16,8 @@ module SqlWrangler
       @db = SQLite3::Database.new db_path
     end
 
-    def execute_sql(sql_string)
-      @db.execute2(sql_string)
+    def execute_sql(sql_string, params={})
+      @db.execute2(sql_string, params)
     end
 
     def command(sql_string)
@@ -35,15 +35,17 @@ module SqlWrangler
     attr_reader :sql_string
     attr_reader :groupings
     attr_reader :conn
+    attr_accessor :params
 
-    def initialize(conn, sql_string)
+    def initialize(conn, sql_string, params={})
       @conn = conn
       @sql_string = sql_string
       @groupings = []
+      @params = params
     end
 
     def execute
-      raw_result = @conn.execute_sql(@sql_string)
+      raw_result = @conn.execute_sql(@sql_string, @params)
       init_groups_for_execution raw_result[0]
       return format_query_result(raw_result)
     end
